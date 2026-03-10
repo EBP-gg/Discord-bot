@@ -137,7 +137,7 @@ class ScreenshotService {
         );
 
         // Capture page.
-        await this.page.goto(url, { waitUntil: "networkidle0" });
+        await this.page.goto(url, { waitUntil: "networkidle2" });
         await this._delay(1000); // As a safety precaution, we wait until the loader has left.
         await this.page.screenshot({
           path: filePath,
