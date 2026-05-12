@@ -659,7 +659,7 @@ DISCORD.client.on("interactionCreate", async (interaction) => {
       }
 
       break;
-    case "ebp_admin_check_channel_permissions":
+    case "ebp_admin_check_permissions":
       // Verify that this is the bot administrator.
       if (interaction.user.id !== HEYHEYCHICKEN_DISCORD_ID) {
         await interaction.reply({

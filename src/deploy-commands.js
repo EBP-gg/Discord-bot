@@ -95,7 +95,7 @@ const COMMANDS = [
     ],
   },
   {
-    name: "ebp_admin_check_channel_permissions",
+    name: "ebp_admin_check_permissions",
     description:
       "Check the bot's permissions on a specific channel (EBP admin only).",
     default_member_permissions: 0x0000000000000008, // ADMINISTRATOR permission
