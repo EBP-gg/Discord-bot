@@ -1,6 +1,6 @@
 {
   "name": "ebp-discord-bot",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "EBP's Discord bot is a bot that will automatically update EVA weapons and modes on your Discord server.",
   "main": "index.js",
   "scripts": {

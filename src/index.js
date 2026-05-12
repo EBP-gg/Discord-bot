@@ -16,8 +16,11 @@ const HeroManager = require("././managers/HeroManager");
 const MapManager = require("././managers/MapManager");
 const ModeManager = require("././managers/ModeManager");
 const WeaponManager = require("././managers/WeaponManager");
+const PACKAGE = require("../package.json");
 
 require("dotenv").config();
+
+console.log(`Starting EBP Discord bot v${PACKAGE.version}...`);
 
 //#endregion
 
