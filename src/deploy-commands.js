@@ -21,6 +21,11 @@ const COMMANDS = [
     default_member_permissions: 0x0000000000000008, // ADMINISTRATOR permission
   },
   {
+    name: "ebp_check_channel_permissions",
+    description: "Check the bot's permissions on the current channel.",
+    default_member_permissions: 0x0000000000000008, // ADMINISTRATOR permission
+  },
+  {
     name: "ebp_create_channel",
     description: "Create a new channel.",
     default_member_permissions: 0x0000000000000008, // ADMINISTRATOR permission
@@ -90,6 +95,26 @@ const COMMANDS = [
     ],
   },
   {
+    name: "ebp_admin_check_channel_permissions",
+    description:
+      "Check the bot's permissions on a specific channel (EBP admin only).",
+    default_member_permissions: 0x0000000000000008, // ADMINISTRATOR permission
+    options: [
+      {
+        name: "server_id",
+        description: "The ID of the server containing the channel",
+        type: 3, // STRING type
+        required: true,
+      },
+      {
+        name: "channel_id",
+        description: "The ID of the channel to check",
+        type: 3, // STRING type
+        required: true,
+      },
+    ],
+  },
+  {
     name: "ebp_admin_sync",
     description: "Force synchronization with the API (EBP admin only).",
     default_member_permissions: 0x0000000000000008, // ADMINISTRATOR permission
@@ -115,7 +140,7 @@ const COMMANDS = [
 ];
 
 const DISCORD_REST = new REST({ version: "10" }).setToken(
-  process.env.DISCORD_BOT_TOKEN
+  process.env.DISCORD_BOT_TOKEN,
 );
 
 // Déploiement global (fonctionne sur tous les serveurs)
@@ -127,7 +152,7 @@ const DISCORD_REST = new REST({ version: "10" }).setToken(
       Routes.applicationCommands(process.env.DISCORD_BOT_ID),
       {
         body: COMMANDS,
-      }
+      },
     );
 
     console.log("Slash commands successfully reloaded!");

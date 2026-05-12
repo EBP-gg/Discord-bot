@@ -180,6 +180,31 @@ class Discord {
     }
   }
 
+  /**
+   * Check the bot's permissions on a given channel against the ones required by the bot.
+   * @param {*} channel - Channel to inspect.
+   * @returns Array of { name, granted } entries, one per required permission.
+   */
+  getBotChannelPermissions(channel) {
+    const REQUIRED_PERMISSIONS = [
+      { name: "View Channel", flag: PermissionFlagsBits.ViewChannel },
+      { name: "Send Messages", flag: PermissionFlagsBits.SendMessages },
+      {
+        name: "Read Message History",
+        flag: PermissionFlagsBits.ReadMessageHistory,
+      },
+      { name: "Attach Files", flag: PermissionFlagsBits.AttachFiles },
+      { name: "Embed Links", flag: PermissionFlagsBits.EmbedLinks },
+      { name: "Manage Messages", flag: PermissionFlagsBits.ManageMessages },
+    ];
+
+    const PERMISSIONS = channel?.permissionsFor(this.client.user) ?? null;
+    return REQUIRED_PERMISSIONS.map((permission) => ({
+      name: permission.name,
+      granted: PERMISSIONS?.has(permission.flag) ?? false,
+    }));
+  }
+
   //#endregion
 
   //#region SEND MESSAGES

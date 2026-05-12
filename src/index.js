@@ -46,29 +46,29 @@ const WEAPON_MANAGER = new WeaponManager(
   DISCORD,
   DATABASE,
   SCREENSHOT_SERVICE,
-  EBP_DOMAIN
+  EBP_DOMAIN,
 );
 const MODE_MANAGER = new ModeManager(
   DISCORD,
   DATABASE,
   SCREENSHOT_SERVICE,
-  EBP_DOMAIN
+  EBP_DOMAIN,
 );
 const MAP_MANAGER = new MapManager(
   DISCORD,
   DATABASE,
   SCREENSHOT_SERVICE,
-  EBP_DOMAIN
+  EBP_DOMAIN,
 );
 const HERO_MANAGER = new HeroManager(
   DISCORD,
   DATABASE,
   SCREENSHOT_SERVICE,
-  EBP_DOMAIN
+  EBP_DOMAIN,
 );
 const WEB_PORT = DEV_MODE ? 3001 : 3000;
 const I18N = JSON.parse(
-  FS.readFileSync(PATH.join(__dirname, "..", "i18n.json"), "utf8")
+  FS.readFileSync(PATH.join(__dirname, "..", "i18n.json"), "utf8"),
 );
 const HEYHEYCHICKEN_DISCORD_ID = "195958479394045952";
 
@@ -129,7 +129,7 @@ function checkDataFromAPI(callback) {
       fetchedWeapons,
       weaponsUrls,
       1920 * 0.9,
-      1080 * 0.9
+      1080 * 0.9,
     );
     console.log("    Weapons refreshed.");
 
@@ -140,7 +140,7 @@ function checkDataFromAPI(callback) {
         fetchedModes,
         modesUrls,
         1200,
-        800
+        800,
       );
       console.log("    Modes refreshed.");
 
@@ -157,7 +157,7 @@ function checkDataFromAPI(callback) {
             fetchedHeroes,
             heroesUrls,
             1550,
-            1300
+            1300,
           );
           console.log("    Heroes refreshed.");
 
@@ -176,7 +176,7 @@ async function refreshServer(interaction) {
   const SERVER = DISCORD.getServers().find((server) => server.id == SERVER_ID);
   if (SERVER) {
     const CHANNELS = DISCORD.getServerChannels(SERVER).filter(
-      (channel) => channel.topic && channel.topic.includes("#EBP_")
+      (channel) => channel.topic && channel.topic.includes("#EBP_"),
     );
     if (CHANNELS.length > 0) {
       await interaction.followUp({
@@ -221,11 +221,11 @@ async function refreshChannel(interaction) {
   const CHANNEL_ID_TO_REFRESH = interaction.options.getString("channel_id");
 
   const SERVER_TO_REFRESH = DISCORD.getServers().find(
-    (server) => server.id == SERVER_ID_TO_REFRESH
+    (server) => server.id == SERVER_ID_TO_REFRESH,
   );
   if (SERVER_TO_REFRESH) {
     const CHANNELS = DISCORD.getServerChannels(SERVER_TO_REFRESH).filter(
-      (channel) => channel.id == CHANNEL_ID_TO_REFRESH
+      (channel) => channel.id == CHANNEL_ID_TO_REFRESH,
     );
     if (CHANNELS.length == 1) {
       console.log(`There are ${CHANNELS.length} rooms on this server.`);
@@ -266,13 +266,13 @@ async function refreshChannel(interaction) {
                         content: "Refreshed!",
                         flags: 64, // MessageFlags.Ephemeral.
                       });
-                    }
+                    },
                   );
-                }
+                },
               );
-            }
+            },
           );
-        }
+        },
       );
     } else {
       console.error('There is no "#EBP_" channel in the Discord server.');
@@ -288,6 +288,43 @@ async function refreshChannel(interaction) {
       flags: 64, // MessageFlags.Ephemeral.
     });
   }
+}
+
+async function checkChannelPermissions(interaction) {
+  const SERVER_ID = interaction.options.getString("server_id");
+  const CHANNEL_ID = interaction.options.getString("channel_id");
+
+  const SERVER = DISCORD.getServers().find((server) => server.id == SERVER_ID);
+  if (!SERVER) {
+    console.error(`Error: Server ${SERVER_ID} not found.`);
+    await interaction.followUp({
+      content: `Error: Server ${SERVER_ID} not found.`,
+      flags: 64, // MessageFlags.Ephemeral.
+    });
+    return;
+  }
+
+  const CHANNEL = SERVER.channels.cache.get(CHANNEL_ID);
+  if (!CHANNEL) {
+    console.error(
+      `Error: Channel ${CHANNEL_ID} not found on server "${SERVER.name}".`,
+    );
+    await interaction.followUp({
+      content: `Error: Channel ${CHANNEL_ID} not found on server "${SERVER.name}".`,
+      flags: 64, // MessageFlags.Ephemeral.
+    });
+    return;
+  }
+
+  const PERMISSIONS = DISCORD.getBotChannelPermissions(CHANNEL);
+  const LINES = PERMISSIONS.map(
+    (permission) => `${permission.granted ? "🟢" : "🔴"} ${permission.name}`,
+  );
+
+  await interaction.followUp({
+    content: `Bot permissions on channel "${CHANNEL.name}" (server "${SERVER.name}"):\n${LINES.join("\n")}`,
+    flags: 64, // MessageFlags.Ephemeral.
+  });
 }
 
 /**
@@ -328,12 +365,12 @@ DISCORD.client.on("interactionCreate", async (interaction) => {
       }
 
       const SERVER = DISCORD.getServers().find(
-        (x) => x.id == interaction.guildId
+        (x) => x.id == interaction.guildId,
       );
 
       if (SERVER) {
         console.log(
-          `"${interaction.user.globalName}" asked for a manual refresh for the: "${SERVER.name}" server.`
+          `"${interaction.user.globalName}" asked for a manual refresh for the: "${SERVER.name}" server.`,
         );
 
         await interaction.reply({
@@ -346,7 +383,7 @@ DISCORD.client.on("interactionCreate", async (interaction) => {
           weapons,
           weaponsUrls,
           i18n,
-          interaction
+          interaction,
         );
         MODE_MANAGER.refreshServer(SERVER, modes, modesUrls, i18n, interaction);
         MAP_MANAGER.refreshServer(SERVER, maps, mapsUrls, i18n, interaction);
@@ -355,7 +392,7 @@ DISCORD.client.on("interactionCreate", async (interaction) => {
           heroes,
           heroesUrls,
           i18n,
-          interaction
+          interaction,
         );
       } else {
         await interaction.reply({
@@ -437,16 +474,16 @@ DISCORD.client.on("interactionCreate", async (interaction) => {
                               content: `Your channel has been successfully created : ${channel.name}`,
                               flags: 64, // MessageFlags.Ephemeral.
                             });
-                          }
+                          },
                         );
-                      }
+                      },
                     );
-                  }
+                  },
                 );
-              }
+              },
             );
           }
-        }
+        },
       );
 
       break;
@@ -462,7 +499,7 @@ DISCORD.client.on("interactionCreate", async (interaction) => {
       }
 
       console.log(
-        `"${interaction.user.globalName}" asked for a manual refresh for the: "${interaction.channel.name}" channel.`
+        `"${interaction.user.globalName}" asked for a manual refresh for the: "${interaction.channel.name}" channel.`,
       );
 
       await interaction.reply({
@@ -502,15 +539,38 @@ DISCORD.client.on("interactionCreate", async (interaction) => {
                         content: "Refreshed!",
                         flags: 64, // MessageFlags.Ephemeral.
                       });
-                    }
+                    },
                   );
-                }
+                },
               );
-            }
+            },
           );
-        }
+        },
       );
       break;
+    case "ebp_check_channel_permissions": {
+      // Check administrator permissions.
+      if (!interaction.member.permissions.has("ADMINISTRATOR")) {
+        await interaction.reply({
+          content:
+            "You must have administrator permissions to use this command.",
+          flags: 64, // MessageFlags.Ephemeral.
+        });
+        return;
+      }
+
+      const PERMISSIONS = DISCORD.getBotChannelPermissions(interaction.channel);
+      const LINES = PERMISSIONS.map(
+        (permission) =>
+          `${permission.granted ? "🟢" : "🔴"} ${permission.name}`,
+      );
+
+      await interaction.reply({
+        content: `Bot permissions on channel "${interaction.channel.name}":\n${LINES.join("\n")}`,
+        flags: 64, // MessageFlags.Ephemeral.
+      });
+      break;
+    }
     case "ebp_admin_list":
       // Verify that this is the bot administrator.
       if (interaction.user.id !== HEYHEYCHICKEN_DISCORD_ID) {
@@ -523,7 +583,7 @@ DISCORD.client.on("interactionCreate", async (interaction) => {
       }
 
       const SERVERS = DISCORD.getServers().map(
-        (server) => server.name + " (" + server.id + ")"
+        (server) => server.name + " (" + server.id + ")",
       );
 
       const MAX_LENGTH = 1900; // Safety margin under 2000.
@@ -599,6 +659,25 @@ DISCORD.client.on("interactionCreate", async (interaction) => {
       }
 
       break;
+    case "ebp_admin_check_channel_permissions":
+      // Verify that this is the bot administrator.
+      if (interaction.user.id !== HEYHEYCHICKEN_DISCORD_ID) {
+        await interaction.reply({
+          content:
+            "This command is reserved for the bot administrator (HeyHeyChicken).",
+          flags: 64, // MessageFlags.Ephemeral.
+        });
+        return;
+      } else {
+        await interaction.reply({
+          content: "Checking channel permissions...",
+          flags: 64, // MessageFlags.Ephemeral.
+        });
+
+        checkChannelPermissions(interaction);
+      }
+
+      break;
     case "ebp_admin_sync":
       // Verify that this is the bot administrator.
       if (interaction.user.id !== HEYHEYCHICKEN_DISCORD_ID) {
@@ -653,7 +732,7 @@ DISCORD.client.on("interactionCreate", async (interaction) => {
 
       const TARGET_SERVER_ID = interaction.options.getString("server_id");
       const TARGET_SERVER = DISCORD.getServers().find(
-        (server) => server.id == TARGET_SERVER_ID
+        (server) => server.id == TARGET_SERVER_ID,
       );
 
       if (TARGET_SERVER) {
@@ -683,7 +762,7 @@ DISCORD.client.on("interactionCreate", async (interaction) => {
 
 DISCORD.client.once("clientReady", async () => {
   console.log(
-    `Node.JS is connected to the bot: ${DISCORD.client.user.username}.`
+    `Node.JS is connected to the bot: ${DISCORD.client.user.username}.`,
   );
 
   // We retrieve the URLs of the weapons.
@@ -702,9 +781,12 @@ DISCORD.client.once("clientReady", async () => {
         AXIOS.get(API_URL + "heroes_urls").then((response5) => {
           heroesUrls = response5.data;
 
-          setInterval(() => {
-            loop();
-          }, 1000 * 60 * 60 * 24); // The script will run every 24 hours.
+          setInterval(
+            () => {
+              loop();
+            },
+            1000 * 60 * 60 * 24,
+          ); // The script will run every 24 hours.
           checkDataFromAPI();
         });
       });
