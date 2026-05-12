@@ -1,7 +1,7 @@
 services:
   app:
     container_name: ebp-discord-bot
-    image: ghcr.io/heyheychicken/ebp-discord-bot:latest
+    image: ghcr.io/ebp-gg/ebp-discord-bot:latest
     restart: unless-stopped
     env_file:
       - .env
