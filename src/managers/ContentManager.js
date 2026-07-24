@@ -25,7 +25,7 @@ class ContentManager {
     this._screenshotService = screenshotService;
     this._domain = domain;
     this._contentType = contentType;
-    this._languages = ["en", "fr", "es", "de", "ro"];
+    this._languages = ["en", "fr", "es", "de", "ro", "it", "pt"];
 
     // Create the screenshots folder for this type of content.
     this.screenshotsFolder = PATH.join(

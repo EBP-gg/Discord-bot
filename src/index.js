@@ -28,7 +28,7 @@ console.log(`Starting EBP Discord bot v${PACKAGE.version}...`);
 
 const DEV_MODE = process.argv.slice(2)[0] == "true";
 const EBP_DOMAIN = "https://ebp.gg";
-const API_URL = EBP_DOMAIN + "/back/api-discord/?route="; // EBP REST API URL - EVA Battle Plan.
+const API_URL = EBP_DOMAIN + "/api"; // EBP REST API URL - EVA Battle Plan.
 
 let weapons; // The list of weapons from the API will be stored here.
 let weaponsUrls; // The list of URLs for the "Weapons" page will be stored here.
@@ -769,19 +769,19 @@ DISCORD.client.once("clientReady", async () => {
   );
 
   // We retrieve the URLs of the weapons.
-  AXIOS.get(API_URL + "weapons_urls").then((response2) => {
+  AXIOS.get(API_URL + "/weapons/discord-urls").then((response2) => {
     weaponsUrls = response2.data;
 
     // We retrieve the URLs of the modes.
-    AXIOS.get(API_URL + "modes_urls").then((response3) => {
+    AXIOS.get(API_URL + "/modes/discord-urls").then((response3) => {
       modesUrls = response3.data;
 
       // We retrieve the URLs of the maps.
-      AXIOS.get(API_URL + "maps_urls").then((response4) => {
+      AXIOS.get(API_URL + "/maps/discord-urls").then((response4) => {
         mapsUrls = response4.data;
 
-        // We retrieve the URLs of the maps.
-        AXIOS.get(API_URL + "heroes_urls").then((response5) => {
+        // We retrieve the URLs of the heroes.
+        AXIOS.get(API_URL + "/heroes/discord-urls").then((response5) => {
           heroesUrls = response5.data;
 
           setInterval(

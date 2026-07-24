@@ -14,7 +14,10 @@ const AXIOS = require("axios");
  */
 class DatabaseService {
   constructor(apiURL) {
+    // Base of the EBP REST API (e.g. "https://ebp.gg/api"). Each content type is
+    // served at `{apiURL}/{contentType}/discord`.
     this._apiURL = apiURL;
+
     this.db = new SQL_LITE.Database("./data/database.db");
 
     this._initializeTables();
@@ -123,7 +126,9 @@ class DatabaseService {
   async fetchNewContent(contentType, callback) {
     let done = 0;
     try {
-      const RESPONSE = await AXIOS.get(this._apiURL + contentType);
+      const RESPONSE = await AXIOS.get(
+        this._apiURL + "/" + contentType + "/discord"
+      );
       const ITEMS = RESPONSE.data;
 
       if (!ITEMS || ITEMS.length === 0) {
