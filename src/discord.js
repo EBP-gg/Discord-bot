@@ -282,6 +282,23 @@ class Discord {
         return undefined;
       }
 
+      // Content messages are embed-only (content is empty), so without "Embed Links"
+      // Discord rejects the send entirely. Check it upfront to report a clear error
+      // instead of letting it fail in the generic catch below.
+      if (embed && !PERMISSIONS.has(PermissionFlagsBits.EmbedLinks)) {
+        const CHANNEL_NAME = channel.name || channel.id || "Unknown";
+        console.error(
+          `        Error: Bot lacks EmbedLinks permission in channel: ${CHANNEL_NAME}`
+        );
+        if (interaction) {
+          interaction.followUp({
+            content: `Error: Permission "Embed Links" is missing in channel "${CHANNEL_NAME}"!`,
+            flags: 64, // MessageFlags.Ephemeral.
+          });
+        }
+        return undefined;
+      }
+
       if (file && !PERMISSIONS.has(PermissionFlagsBits.AttachFiles)) {
         const CHANNEL_NAME = channel.name || channel.id || "Unknown";
         console.error(
