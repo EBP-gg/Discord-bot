@@ -472,6 +472,51 @@ class Discord {
         return;
       }
 
+      // Discord only lets the bot allow/deny permissions it has itself in the server.
+      const OVERWRITE_PERMISSIONS = [
+        { name: "View Channel", flag: PermissionFlagsBits.ViewChannel },
+        { name: "Send Messages", flag: PermissionFlagsBits.SendMessages },
+        {
+          name: "Read Message History",
+          flag: PermissionFlagsBits.ReadMessageHistory,
+        },
+        { name: "Attach Files", flag: PermissionFlagsBits.AttachFiles },
+        {
+          name: "Create Public Threads",
+          flag: PermissionFlagsBits.CreatePublicThreads,
+        },
+        {
+          name: "Create Private Threads",
+          flag: PermissionFlagsBits.CreatePrivateThreads,
+        },
+        {
+          name: "Send Messages in Threads",
+          flag: PermissionFlagsBits.SendMessagesInThreads,
+        },
+      ];
+      const MISSING_PERMISSIONS = OVERWRITE_PERMISSIONS.filter(
+        (permission) => !BOT_MEMBER.permissions.has(permission.flag)
+      ).map((permission) => `"${permission.name}"`);
+      if (MISSING_PERMISSIONS.length > 0) {
+        const SERVER_NAME =
+          interaction.guild?.name || interaction.guild?.id || "Unknown";
+        console.error(
+          `Error: Bot lacks ${MISSING_PERMISSIONS.join(
+            ", "
+          )} permission(s) in server: ${SERVER_NAME}`
+        );
+        interaction.followUp({
+          content: `Error: Permission(s) ${MISSING_PERMISSIONS.join(
+            ", "
+          )} missing in server ${SERVER_NAME}!`,
+          flags: 64, // MessageFlags.Ephemeral.
+        });
+        if (callback) {
+          callback(null);
+        }
+        return;
+      }
+
       const CHANNEL = await interaction.guild.channels.create({
         name: name,
         topic: topic,

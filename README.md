@@ -12,7 +12,7 @@
 
 ## 🖥️ Add this bot to your server
 
-1. Click here : [Install EBP's Discord bot](https://discord.com/oauth2/authorize?client_id=1295696799839031318&permissions=2416036880&integration_type=0&scope=bot).
+1. Click here : [Install EBP's Discord bot](https://discord.com/oauth2/authorize?client_id=1295696799839031318&permissions=380373167120&integration_type=0&scope=bot).
 2. Click on the "Authorize" button.
 3. Use this command to create a channel: `/ebp_create_channel`.
 
