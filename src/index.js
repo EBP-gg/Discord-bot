@@ -76,6 +76,8 @@ const I18N = JSON.parse(
 const HEYHEYCHICKEN_DISCORD_ID = "195958479394045952";
 const PERMISSIONS_CHECK_DELAY = 1000 * 60 * 2; // Wait 2 minutes after the last channel update.
 const PERMISSIONS_CHECK_TIMERS = new Map(); // Pending permission checks, by channel ID.
+const PERMISSIONS_MESSAGES_DELAY = 1000 * 10; // Wait 10 seconds between two direct messages.
+let permissionsCheckRunning = false; // True while all the servers' permissions are being checked.
 
 //#endregion
 
@@ -347,10 +349,11 @@ function getBotChannelLanguage(channel) {
  * server owner by direct message if at least one permission is missing.
  * @param {*} server - Server to check.
  * @param {Array} channels - Channels to check (channels not managed by the bot are ignored).
+ * @returns {Promise<boolean>} True if a direct message has been sent to the server owner.
  */
 async function checkServerPermissions(server, channels) {
   if (DEV_MODE && server.name != "EBP - EVA Battle Plan") {
-    return;
+    return false;
   }
 
   const REPORTS = [];
@@ -373,7 +376,7 @@ async function checkServerPermissions(server, channels) {
   }
 
   if (REPORTS.length === 0) {
-    return;
+    return false;
   }
 
   console.log(
@@ -387,21 +390,47 @@ async function checkServerPermissions(server, channels) {
         .replace("{channel}", () => `<#${report.channel.id}>`)
         .replace("{permissions}", () => report.missingPermissions.join(", "))}`,
   );
-  await DISCORD.sendMessageToServerOwner(
+  return await DISCORD.sendMessageToServerOwner(
     server,
     `${i18n("missing_permissions", LANGUAGE).replace("{server}", () => server.name)}\n${LINES.join("\n")}\n\n${i18n("missing_permissions_fix", LANGUAGE)}`,
   );
 }
 
 /**
- * Check the bot's permissions on all the channels it manages.
+ * Check the bot's permissions on all the channels it manages. The servers are
+ * checked one by one, with a delay after each direct message, so that the bot
+ * doesn't send a burst of direct messages (Discord could flag it as spam).
+ * @returns {Promise<number>} Number of direct messages sent, or -1 if a check is already running.
  */
-function checkAllServersPermissions() {
-  console.log("Checking permissions...");
-  for (const SERVER of DISCORD.getServers()) {
-    // Channels the bot can no longer view must be checked too.
-    checkServerPermissions(SERVER, Array.from(SERVER.channels.cache.values()));
+async function checkAllServersPermissions() {
+  if (permissionsCheckRunning) {
+    console.log("A permissions check is already running.");
+    return -1;
   }
+  permissionsCheckRunning = true;
+
+  console.log("Checking permissions...");
+  let nbMessagesSent = 0;
+  try {
+    for (const SERVER of DISCORD.getServers()) {
+      // Channels the bot can no longer view must be checked too.
+      if (
+        await checkServerPermissions(
+          SERVER,
+          Array.from(SERVER.channels.cache.values()),
+        )
+      ) {
+        nbMessagesSent++;
+        await DISCORD._delay(PERMISSIONS_MESSAGES_DELAY);
+      }
+    }
+  } finally {
+    permissionsCheckRunning = false;
+  }
+  console.log(
+    `Permissions checked ("${nbMessagesSent}" direct message(s) sent).`,
+  );
+  return nbMessagesSent;
 }
 
 /**
@@ -754,6 +783,36 @@ DISCORD.client.on("interactionCreate", async (interaction) => {
         checkChannelPermissions(interaction);
       }
 
+      break;
+    case "ebp_admin_check_all_permissions":
+      // Verify that this is the bot administrator.
+      if (interaction.user.id !== HEYHEYCHICKEN_DISCORD_ID) {
+        await interaction.reply({
+          content:
+            "This command is reserved for the bot administrator (HeyHeyChicken).",
+          flags: 64, // MessageFlags.Ephemeral.
+        });
+        return;
+      } else {
+        await interaction.reply({
+          content: "Checking the permissions of all servers...",
+          flags: 64, // MessageFlags.Ephemeral.
+        });
+
+        const NB_MESSAGES_SENT = await checkAllServersPermissions();
+        try {
+          await interaction.followUp({
+            content:
+              NB_MESSAGES_SENT < 0
+                ? "A permissions check is already running."
+                : `Permissions checked ("${NB_MESSAGES_SENT}" direct message(s) sent to server owners).`,
+            flags: 64, // MessageFlags.Ephemeral.
+          });
+        } catch (e) {
+          // The interaction expires after 15 minutes, the result is still in the logs.
+          console.error("Unable to send the permissions check result.", e);
+        }
+      }
       break;
     case "ebp_admin_sync":
       // Verify that this is the bot administrator.

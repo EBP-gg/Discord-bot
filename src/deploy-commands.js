@@ -115,6 +115,12 @@ const COMMANDS = [
     ],
   },
   {
+    name: "ebp_admin_check_all_permissions",
+    description:
+      "Check the bot's permissions on all servers and warn the owners by DM (EBP admin only).",
+    default_member_permissions: 0x0000000000000008, // ADMINISTRATOR permission
+  },
+  {
     name: "ebp_admin_sync",
     description: "Force synchronization with the API (EBP admin only).",
     default_member_permissions: 0x0000000000000008, // ADMINISTRATOR permission

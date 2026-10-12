@@ -335,6 +335,7 @@ class Discord {
    * Send a direct message to the owner of a server.
    * @param {*} server - Server whose owner must be contacted.
    * @param {string} content - Content of the message.
+   * @returns {Promise<boolean>} True if a direct message has been sent.
    */
   async sendMessageToServerOwner(server, content) {
     try {
@@ -343,12 +344,14 @@ class Discord {
       console.log(
         `Direct message sent to the owner of the server "${server.name}".`
       );
+      return true;
     } catch (e) {
       // The owner may have disabled direct messages from server members.
       console.error(
         `Error: Unable to send a direct message to the owner of the server "${server.name}".`,
         e
       );
+      return false;
     }
   }
 
