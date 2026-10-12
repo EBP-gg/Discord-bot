@@ -74,6 +74,8 @@ const I18N = JSON.parse(
   FS.readFileSync(PATH.join(__dirname, "..", "i18n.json"), "utf8"),
 );
 const HEYHEYCHICKEN_DISCORD_ID = "195958479394045952";
+const PERMISSIONS_CHECK_DELAY = 1000 * 60 * 2; // Wait 2 minutes after the last channel update.
+const PERMISSIONS_CHECK_TIMERS = new Map(); // Pending permission checks, by channel ID.
 
 //#endregion
 
@@ -328,6 +330,78 @@ async function checkChannelPermissions(interaction) {
     content: `Bot permissions on channel "${CHANNEL.name}" (server "${SERVER.name}"):\n${LINES.join("\n")}`,
     flags: 64, // MessageFlags.Ephemeral.
   });
+}
+
+/**
+ * Returns the language of a channel managed by the bot.
+ * @param {*} channel - Channel to analyze.
+ * @returns The channel language, or undefined if the channel isn't managed by the bot.
+ */
+function getBotChannelLanguage(channel) {
+  const MATCH = channel?.topic?.match(/#EBP_[A-Z]+_BOT\((\w{2})\)/);
+  return MATCH ? MATCH[1].toLowerCase() : undefined;
+}
+
+/**
+ * Check the bot's permissions on the given channels of a server, and warn the
+ * server owner by direct message if at least one permission is missing.
+ * @param {*} server - Server to check.
+ * @param {Array} channels - Channels to check (channels not managed by the bot are ignored).
+ */
+async function checkServerPermissions(server, channels) {
+  if (DEV_MODE && server.name != "EBP - EVA Battle Plan") {
+    return;
+  }
+
+  const REPORTS = [];
+  for (const CHANNEL of channels) {
+    const LANGUAGE = getBotChannelLanguage(CHANNEL);
+    if (!LANGUAGE) {
+      continue;
+    }
+
+    const MISSING_PERMISSIONS = DISCORD.getBotChannelPermissions(CHANNEL)
+      .filter((permission) => !permission.granted)
+      .map((permission) => `"${permission.name}"`);
+    if (MISSING_PERMISSIONS.length > 0) {
+      REPORTS.push({
+        channel: CHANNEL,
+        language: LANGUAGE,
+        missingPermissions: MISSING_PERMISSIONS,
+      });
+    }
+  }
+
+  if (REPORTS.length === 0) {
+    return;
+  }
+
+  console.log(
+    `Missing permissions on "${REPORTS.length}" channel(s) of the server "${server.name}".`,
+  );
+
+  const LANGUAGE = REPORTS[0].language;
+  const LINES = REPORTS.map(
+    (report) =>
+      `- ${i18n("missing_permissions_channel", LANGUAGE)
+        .replace("{channel}", () => `<#${report.channel.id}>`)
+        .replace("{permissions}", () => report.missingPermissions.join(", "))}`,
+  );
+  await DISCORD.sendMessageToServerOwner(
+    server,
+    `${i18n("missing_permissions", LANGUAGE).replace("{server}", () => server.name)}\n${LINES.join("\n")}\n\n${i18n("missing_permissions_fix", LANGUAGE)}`,
+  );
+}
+
+/**
+ * Check the bot's permissions on all the channels it manages.
+ */
+function checkAllServersPermissions() {
+  console.log("Checking permissions...");
+  for (const SERVER of DISCORD.getServers()) {
+    // Channels the bot can no longer view must be checked too.
+    checkServerPermissions(SERVER, Array.from(SERVER.channels.cache.values()));
+  }
 }
 
 /**
@@ -763,6 +837,27 @@ DISCORD.client.on("interactionCreate", async (interaction) => {
   }
 });
 
+// Check the bot's permissions when a channel it manages is updated (permissions,
+// category, sync...). The check is delayed so that several updates in a row
+// only trigger one check.
+DISCORD.client.on("channelUpdate", (oldChannel, newChannel) => {
+  if (!newChannel.guild || !getBotChannelLanguage(newChannel)) {
+    return;
+  }
+
+  clearTimeout(PERMISSIONS_CHECK_TIMERS.get(newChannel.id));
+  PERMISSIONS_CHECK_TIMERS.set(
+    newChannel.id,
+    setTimeout(() => {
+      PERMISSIONS_CHECK_TIMERS.delete(newChannel.id);
+      const CHANNEL = newChannel.guild.channels.cache.get(newChannel.id);
+      if (CHANNEL) {
+        checkServerPermissions(CHANNEL.guild, [CHANNEL]);
+      }
+    }, PERMISSIONS_CHECK_DELAY),
+  );
+});
+
 DISCORD.client.once("clientReady", async () => {
   console.log(
     `Node.JS is connected to the bot: ${DISCORD.client.user.username}.`,
@@ -790,6 +885,12 @@ DISCORD.client.once("clientReady", async () => {
             },
             1000 * 60 * 60 * 24,
           ); // The script will run every 24 hours.
+          setInterval(
+            () => {
+              checkAllServersPermissions();
+            },
+            1000 * 60 * 60 * 24 * 7,
+          ); // The permissions will be checked every week.
           checkDataFromAPI();
         });
       });

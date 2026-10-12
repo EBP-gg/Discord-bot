@@ -5,7 +5,10 @@
     "weapons": "Weapons",
     "modes": "Modes",
     "maps": "Maps",
-    "heroes": "Hero"
+    "heroes": "Hero",
+    "missing_permissions": "⚠️ EBP's Discord bot is missing permissions on your server \"{server}\", so it can no longer update the following channel(s):",
+    "missing_permissions_fix": "Please give these permissions back to the bot in the channel settings (\"Permissions\" tab). You can check them with the `/ebp_check_channel_permissions` command in the channel.",
+    "missing_permissions_channel": "{channel}: {permissions}"
   },
   "es": {
     "source": "Fuente",
@@ -13,7 +16,10 @@
     "weapons": "Armas",
     "modes": "Modos",
     "maps": "Mapas",
-    "heroes": "Héroe"
+    "heroes": "Héroe",
+    "missing_permissions": "⚠️ Al bot de Discord de EBP le faltan permisos en tu servidor \"{server}\", por lo que ya no puede actualizar los siguientes canales:",
+    "missing_permissions_fix": "Vuelve a dar estos permisos al bot en la configuración del canal (pestaña \"Permisos\"). Puedes comprobarlos con el comando `/ebp_check_channel_permissions` en el canal.",
+    "missing_permissions_channel": "{channel}: {permissions}"
   },
   "fr": {
     "source": "Source",
@@ -21,7 +27,10 @@
     "weapons": "Armes",
     "modes": "Modes",
     "maps": "Cartes",
-    "heroes": "Héros"
+    "heroes": "Héros",
+    "missing_permissions": "⚠️ Il manque des permissions au bot Discord d'EBP sur votre serveur \"{server}\", il ne peut donc plus mettre à jour le(s) salon(s) suivant(s) :",
+    "missing_permissions_fix": "Merci de redonner ces permissions au bot dans les paramètres du salon (onglet \"Permissions\"). Vous pouvez les vérifier avec la commande `/ebp_check_channel_permissions` dans le salon.",
+    "missing_permissions_channel": "{channel} : {permissions}"
   },
   "ro": {
     "source": "Sursă",
@@ -29,7 +38,10 @@
     "weapons": "Arme",
     "modes": "Moduri",
     "maps": "Hărți",
-    "heroes": "Erdi"
+    "heroes": "Erdi",
+    "missing_permissions": "⚠️ Botului Discord EBP îi lipsesc permisiuni pe serverul dvs. \"{server}\", așa că nu mai poate actualiza următoarele canale:",
+    "missing_permissions_fix": "Vă rugăm să redați aceste permisiuni botului în setările canalului (fila \"Permisiuni\"). Le puteți verifica cu comanda `/ebp_check_channel_permissions` în canal.",
+    "missing_permissions_channel": "{channel}: {permissions}"
   },
   "de": {
     "source": "Quelle",
@@ -37,6 +49,9 @@
     "weapons": "Waffen",
     "modes": "Modi",
     "maps": "Karten",
-    "heroes": "Helden"
+    "heroes": "Helden",
+    "missing_permissions": "⚠️ Dem Discord-Bot von EBP fehlen Berechtigungen auf Ihrem Server \"{server}\", daher kann er die folgenden Kanäle nicht mehr aktualisieren:",
+    "missing_permissions_fix": "Bitte geben Sie dem Bot diese Berechtigungen in den Kanaleinstellungen (Reiter \"Berechtigungen\") zurück. Sie können sie mit dem Befehl `/ebp_check_channel_permissions` im Kanal überprüfen.",
+    "missing_permissions_channel": "{channel}: {permissions}"
   }
 }

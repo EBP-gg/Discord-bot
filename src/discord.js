@@ -331,6 +331,27 @@ class Discord {
     return message;
   }
 
+  /**
+   * Send a direct message to the owner of a server.
+   * @param {*} server - Server whose owner must be contacted.
+   * @param {string} content - Content of the message.
+   */
+  async sendMessageToServerOwner(server, content) {
+    try {
+      const OWNER = await server.fetchOwner();
+      await OWNER.send(content);
+      console.log(
+        `Direct message sent to the owner of the server "${server.name}".`
+      );
+    } catch (e) {
+      // The owner may have disabled direct messages from server members.
+      console.error(
+        `Error: Unable to send a direct message to the owner of the server "${server.name}".`,
+        e
+      );
+    }
+  }
+
   //#endregion
 
   /**
