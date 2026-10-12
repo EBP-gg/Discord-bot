@@ -342,13 +342,13 @@ class Discord {
       const OWNER = await server.fetchOwner();
       await OWNER.send(content);
       console.log(
-        `Direct message sent to the owner of the server "${server.name}".`
+        `    Direct message sent to the owner of the server "${server.name}".`
       );
       return true;
     } catch (e) {
       // The owner may have disabled direct messages from server members.
       console.error(
-        `Error: Unable to send a direct message to the owner of the server "${server.name}".`,
+        `    Error: Unable to send a direct message to the owner of the server "${server.name}".`,
         e
       );
       return false;
