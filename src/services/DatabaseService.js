@@ -46,6 +46,12 @@ class DatabaseService {
         url TEXT NOT NULL,
         UNIQUE(type, name, language)
       )`);
+
+      // Table for the servers whose owner has been reminded to create a channel.
+      this.db.run(`CREATE TABLE IF NOT EXISTS setup_reminders (
+        server_id TEXT PRIMARY KEY,
+        date TEXT NOT NULL
+      )`);
     });
   }
 
@@ -218,6 +224,54 @@ class DatabaseService {
     } catch (error) {
       console.error(`Error setting image for ${type}:`, error);
     }
+  }
+
+  //#endregion
+
+  //#region Setup reminders
+
+  /**
+   * Check if the owner of a server has already been reminded to create a channel.
+   * @param {string} serverId - The ID of the server.
+   * @returns {Promise<boolean>} True if the reminder has already been sent.
+   */
+  async hasSetupReminder(serverId) {
+    return new Promise((resolve, reject) => {
+      this.db.get(
+        `SELECT server_id FROM setup_reminders WHERE server_id = ? LIMIT 1`,
+        [serverId],
+        (err, row) => {
+          if (err) {
+            console.error(err);
+            reject(err);
+          } else {
+            resolve(!!row);
+          }
+        }
+      );
+    });
+  }
+
+  /**
+   * Remember that the owner of a server has been reminded to create a channel.
+   * @param {string} serverId - The ID of the server.
+   * @returns {Promise} Promise that resolves when insertion is complete.
+   */
+  async setSetupReminder(serverId) {
+    return new Promise((resolve, reject) => {
+      this.db.run(
+        `INSERT OR REPLACE INTO setup_reminders (server_id, date) VALUES (?, ?)`,
+        [serverId, new Date().toISOString()],
+        function (err) {
+          if (err) {
+            console.error(err);
+            reject(err);
+          } else {
+            resolve();
+          }
+        }
+      );
+    });
   }
 
   //#endregion

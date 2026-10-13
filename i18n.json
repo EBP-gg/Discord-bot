@@ -8,7 +8,8 @@
     "heroes": "Hero",
     "missing_permissions": "⚠️ EBP's Discord bot is missing permissions on your server \"{server}\", so it can no longer update the following channel(s):",
     "missing_permissions_fix": "Please give these permissions back to the bot in the channel settings (\"Permissions\" tab). You can check them with the `/ebp_check_channel_permissions` command in the channel.",
-    "missing_permissions_channel": "{channel}: {permissions}"
+    "missing_permissions_channel": "{channel}: {permissions}",
+    "setup_reminder": "👋 Thanks for adding EBP's Discord bot to your server \"{server}\"! However, it doesn't have any channel to update yet.\n\nTo create one:\n1️⃣ Type the `/ebp_create_channel` command on your server.\n2️⃣ Choose the channel type (weapons, modes, maps or heroes) and its language.\n\nThat's it, the channel will fill up and stay up to date automatically ✨"
   },
   "es": {
     "source": "Fuente",
@@ -19,7 +20,8 @@
     "heroes": "Héroe",
     "missing_permissions": "⚠️ Al bot de Discord de EBP le faltan permisos en tu servidor \"{server}\", por lo que ya no puede actualizar los siguientes canales:",
     "missing_permissions_fix": "Vuelve a dar estos permisos al bot en la configuración del canal (pestaña \"Permisos\"). Puedes comprobarlos con el comando `/ebp_check_channel_permissions` en el canal.",
-    "missing_permissions_channel": "{channel}: {permissions}"
+    "missing_permissions_channel": "{channel}: {permissions}",
+    "setup_reminder": "👋 ¡Gracias por añadir el bot de Discord de EBP a tu servidor \"{server}\"! Sin embargo, todavía no tiene ningún canal que actualizar.\n\nPara crear uno:\n1️⃣ Escribe el comando `/ebp_create_channel` en tu servidor.\n2️⃣ Elige el tipo de canal (armas, modos, mapas o héroes) y su idioma.\n\n¡Eso es todo! El canal se llenará y se mantendrá actualizado automáticamente ✨"
   },
   "fr": {
     "source": "Source",
@@ -30,7 +32,8 @@
     "heroes": "Héros",
     "missing_permissions": "⚠️ Il manque des permissions au bot Discord d'EBP sur votre serveur \"{server}\", il ne peut donc plus mettre à jour le(s) salon(s) suivant(s) :",
     "missing_permissions_fix": "Merci de redonner ces permissions au bot dans les paramètres du salon (onglet \"Permissions\"). Vous pouvez les vérifier avec la commande `/ebp_check_channel_permissions` dans le salon.",
-    "missing_permissions_channel": "{channel} : {permissions}"
+    "missing_permissions_channel": "{channel} : {permissions}",
+    "setup_reminder": "👋 Merci d'avoir ajouté le bot Discord d'EBP sur votre serveur \"{server}\" ! Il n'a cependant encore aucun salon à mettre à jour.\n\nPour en créer un :\n1️⃣ Tapez la commande `/ebp_create_channel` sur votre serveur.\n2️⃣ Choisissez le type de salon (armes, modes, cartes ou héros) et sa langue.\n\nC'est tout, le salon se remplira et restera à jour automatiquement ✨"
   },
   "ro": {
     "source": "Sursă",
@@ -41,7 +44,8 @@
     "heroes": "Erdi",
     "missing_permissions": "⚠️ Botului Discord EBP îi lipsesc permisiuni pe serverul dvs. \"{server}\", așa că nu mai poate actualiza următoarele canale:",
     "missing_permissions_fix": "Vă rugăm să redați aceste permisiuni botului în setările canalului (fila \"Permisiuni\"). Le puteți verifica cu comanda `/ebp_check_channel_permissions` în canal.",
-    "missing_permissions_channel": "{channel}: {permissions}"
+    "missing_permissions_channel": "{channel}: {permissions}",
+    "setup_reminder": "👋 Vă mulțumim că ați adăugat botul Discord EBP pe serverul dvs. \"{server}\"! Totuși, acesta nu are încă niciun canal de actualizat.\n\nPentru a crea unul:\n1️⃣ Tastați comanda `/ebp_create_channel` pe serverul dvs.\n2️⃣ Alegeți tipul canalului (arme, moduri, hărți sau eroi) și limba acestuia.\n\nAsta e tot, canalul se va completa și se va actualiza automat ✨"
   },
   "de": {
     "source": "Quelle",
@@ -52,6 +56,7 @@
     "heroes": "Helden",
     "missing_permissions": "⚠️ Dem Discord-Bot von EBP fehlen Berechtigungen auf Ihrem Server \"{server}\", daher kann er die folgenden Kanäle nicht mehr aktualisieren:",
     "missing_permissions_fix": "Bitte geben Sie dem Bot diese Berechtigungen in den Kanaleinstellungen (Reiter \"Berechtigungen\") zurück. Sie können sie mit dem Befehl `/ebp_check_channel_permissions` im Kanal überprüfen.",
-    "missing_permissions_channel": "{channel}: {permissions}"
+    "missing_permissions_channel": "{channel}: {permissions}",
+    "setup_reminder": "👋 Danke, dass Sie den Discord-Bot von EBP zu Ihrem Server \"{server}\" hinzugefügt haben! Allerdings hat er noch keinen Kanal, den er aktualisieren kann.\n\nSo erstellen Sie einen:\n1️⃣ Geben Sie den Befehl `/ebp_create_channel` auf Ihrem Server ein.\n2️⃣ Wählen Sie den Kanaltyp (Waffen, Modi, Karten oder Helden) und seine Sprache.\n\nDas war's, der Kanal füllt sich automatisch und bleibt immer aktuell ✨"
   }
 }

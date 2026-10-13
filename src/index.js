@@ -77,6 +77,7 @@ const HEYHEYCHICKEN_DISCORD_ID = "195958479394045952";
 const PERMISSIONS_CHECK_DELAY = 1000 * 60 * 2; // Wait 2 minutes after the last channel update.
 const PERMISSIONS_CHECK_TIMERS = new Map(); // Pending permission checks, by channel ID.
 const PERMISSIONS_MESSAGES_DELAY = 1000 * 10; // Wait 10 seconds between two direct messages.
+const SETUP_REMINDER_DELAY = 1000 * 60 * 60 * 24; // Give the owner 24 hours to create a channel before reminding them.
 let permissionsCheckRunning = false; // True while all the servers' permissions are being checked.
 
 //#endregion
@@ -397,7 +398,57 @@ async function checkServerPermissions(server, channels) {
 }
 
 /**
- * Check the bot's permissions on all the channels it manages. The servers are
+ * Remind the server owner by direct message how to create a channel, if the bot
+ * has been added to the server but doesn't manage any channel there. The
+ * reminder is only sent once per server.
+ * @param {*} server - Server to check.
+ * @returns {Promise<boolean>} True if a direct message has been sent to the server owner.
+ */
+async function checkServerSetup(server) {
+  if (DEV_MODE && server.name != "EBP - EVA Battle Plan") {
+    return false;
+  }
+
+  // Channels the bot can no longer view must be counted too.
+  const HAS_BOT_CHANNEL = Array.from(server.channels.cache.values()).some(
+    (channel) => getBotChannelLanguage(channel),
+  );
+  if (
+    HAS_BOT_CHANNEL ||
+    Date.now() - server.joinedTimestamp < SETUP_REMINDER_DELAY
+  ) {
+    return false;
+  }
+
+  try {
+    if (await DATABASE.hasSetupReminder(server.id)) {
+      return false;
+    }
+  } catch (e) {
+    return false;
+  }
+
+  console.log(`No channel created on the server "${server.name}".`);
+
+  // The server locale looks like "fr" or "en-US".
+  const LANGUAGE = server.preferredLocale?.split("-")[0];
+  const SENT = await DISCORD.sendMessageToServerOwner(
+    server,
+    i18n("setup_reminder", LANGUAGE).replace("{server}", () => server.name),
+  );
+  if (SENT) {
+    try {
+      await DATABASE.setSetupReminder(server.id);
+    } catch (e) {
+      // The error is already logged by the database service.
+    }
+  }
+  return SENT;
+}
+
+/**
+ * Check the bot's permissions on all the channels it manages, and remind the
+ * owners of the servers without any channel how to create one. The servers are
  * checked one by one, with a delay after each direct message, so that the bot
  * doesn't send a burst of direct messages (Discord could flag it as spam).
  * @returns {Promise<number>} Number of direct messages sent, or -1 if a check is already running.
@@ -415,10 +466,11 @@ async function checkAllServersPermissions() {
     for (const SERVER of DISCORD.getServers()) {
       // Channels the bot can no longer view must be checked too.
       if (
-        await checkServerPermissions(
+        (await checkServerPermissions(
           SERVER,
           Array.from(SERVER.channels.cache.values()),
-        )
+        )) ||
+        (await checkServerSetup(SERVER))
       ) {
         nbMessagesSent++;
         await DISCORD._delay(PERMISSIONS_MESSAGES_DELAY);
